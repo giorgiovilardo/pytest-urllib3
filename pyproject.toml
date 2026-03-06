@@ -74,5 +74,6 @@ env_list = ["py39", "py310", "py311", "py312", "py313", "py314"]
 
 [tool.tox.env_run_base]
 description = "Run tests under {base_python}"
+set_env = {TERM = "xterm"}
 deps = ["pytest>=8"]
-commands = [["pytest", "tests/", "-v"]]
+commands = [["pytest", "tests/", "-q", "--no-header", "--tb=short"]]
