@@ -1,4 +1,5 @@
 import copy
+import http.client
 import io
 import json as json_module
 from collections.abc import Callable
@@ -33,11 +34,17 @@ def _build_response(
     else:
         body = b""
 
+    final_headers.setdefault("Content-Length", str(len(body)))
+
     return urllib3.HTTPResponse(
         body=io.BytesIO(body),
         status=status_code,
         headers=final_headers,
         preload_content=False,
+        decode_content=False,
+        version=11,
+        version_string="HTTP/1.1",
+        reason=http.client.responses.get(status_code, "Unknown"),
     )
 
 
