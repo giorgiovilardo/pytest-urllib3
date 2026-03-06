@@ -45,12 +45,12 @@ def urllib3_mock(
 
     def mocked_urlopen(pool, method, url, body=None, headers=None, *args, **kwargs):
         full_url = _build_full_url(pool, url)
+        if isinstance(body, str):
+            body = body.encode("utf-8")
         req = Request(
             method=method.upper(),
             url=full_url,
-            body=body
-            if isinstance(body, bytes)
-            else (body.encode("utf-8") if isinstance(body, str) else body),
+            body=body,
             headers=dict(headers) if headers else {},
         )
         if options.should_mock(req):

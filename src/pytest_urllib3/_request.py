@@ -13,6 +13,4 @@ class Request:
     def content(self) -> bytes:
         if self.body is None:
             return b""
-        if isinstance(self.body, str):
-            return self.body.encode("utf-8")
         return self.body
