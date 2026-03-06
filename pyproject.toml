@@ -1,0 +1,54 @@
+[project]
+name = "pytest-urllib3"
+version = "0.1.0"
+description = "A pytest plugin to mock urllib3 requests"
+readme = "README.md"
+license = "MPL-2.0"
+authors = [
+    { name = "Giorgio Vilardo" }
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pytest>=8",
+    "urllib3>=2",
+]
+
+[project.urls]
+Homepage = "https://github.com/giorgiovilardo/pytest-urllib3"
+Issues = "https://github.com/giorgiovilardo/pytest-urllib3/issues"
+
+[project.entry-points.pytest11]
+urllib3_mock = "pytest_urllib3"
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11 ; python_full_version >= '3.10'",
+    "tox>=4.48.1; python_version >= '3.10'",
+    "tox-uv>=1.33.1; python_version >= '3.10'",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "ISC001", "ISC002", "W"]
+ignore = ["E501"]
+
+[tool.ruff.lint.flake8-implicit-str-concat]
+allow-multiline = false
+
+[tool.ruff.lint.isort]
+known-first-party = ["pytest_urllib3"]
+
+[tool.tox]
+env_list = ["py39", "py310", "py311", "py312", "py313", "py314"]
+
+[tool.tox.env_run_base]
+description = "Run tests under {base_python}"
+deps = ["pytest>=8"]
+commands = [["pytest", "tests/", "-v"]]
