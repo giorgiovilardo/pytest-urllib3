@@ -9,7 +9,7 @@ import urllib3.exceptions
 import urllib3
 from pytest_urllib3 import Urllib3Mock
 
-# Phase 1: Core tests
+# Core response tests
 
 
 @pytest.mark.urllib3_mock(assert_all_requests_were_expected=False)
@@ -475,7 +475,7 @@ def test_pool_manager_intercepted(urllib3_mock: Urllib3Mock):
     assert json.loads(response.data) == {"ok": True}
 
 
-# Phase 2: Missing matching tests
+# Multi-value header matching
 
 
 def test_multi_value_headers_matching(urllib3_mock: Urllib3Mock):
@@ -501,7 +501,7 @@ def test_headers_matching_case_insensitive(urllib3_mock: Urllib3Mock):
     assert response.status == 200
 
 
-# Phase 3: Missing callback test
+# Callback with matchers
 
 
 def test_callback_matching_method(urllib3_mock: Urllib3Mock):
@@ -521,7 +521,7 @@ def test_callback_matching_method(urllib3_mock: Urllib3Mock):
     assert post_response.data == b"post callback"
 
 
-# Phase 4: Missing retrieval tests
+# Request retrieval with filters
 
 
 def test_requests_retrieval_on_same_url(urllib3_mock: Urllib3Mock):
@@ -570,7 +570,7 @@ def test_requests_retrieval_json_matching(urllib3_mock: Urllib3Mock):
     assert json.loads(requests[0].content) == {"a": 1}
 
 
-# Phase 6: Edge case tests
+# Edge cases
 
 
 def test_with_many_reused_responses(urllib3_mock: Urllib3Mock):

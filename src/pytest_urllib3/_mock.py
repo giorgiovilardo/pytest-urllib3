@@ -171,10 +171,11 @@ class Urllib3Mock:
                 matcher.nb_calls += 1
                 return callback
 
-        # Or the last registered (if it can be reused)
-        if matcher.is_reusable:
-            matcher.nb_calls += 1
-            return callback
+        # All matching callbacks have been used; reuse the last one if allowed
+        last_matcher, last_callback = callbacks[-1]
+        if last_matcher.is_reusable:
+            last_matcher.nb_calls += 1
+            return last_callback
 
         return None
 
