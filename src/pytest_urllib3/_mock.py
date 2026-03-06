@@ -9,7 +9,7 @@ import urllib3.exceptions
 
 import urllib3
 from pytest_urllib3._options import _Urllib3MockOptions
-from pytest_urllib3._pretty_print import RequestDescription
+from pytest_urllib3._pretty_print import explain_no_response_found
 from pytest_urllib3._request import Request
 from pytest_urllib3._request_matcher import _RequestMatcher
 
@@ -125,34 +125,10 @@ class Urllib3Mock:
 
     def _request_not_matched(self, request: Request) -> NoReturn:
         self._requests_not_matched.append(request)
-        raise urllib3.exceptions.TimeoutError(
-            self._explain_that_no_response_was_found(request)
-        )
-
-    def _explain_that_no_response_was_found(self, request: Request) -> str:
         matchers = [matcher for matcher, _ in self._callbacks]
-
-        message = (
-            f"No response can be found for {RequestDescription(request, matchers)}"
+        raise urllib3.exceptions.TimeoutError(
+            explain_no_response_found(request, matchers)
         )
-
-        already_matched = []
-        unmatched = []
-        for matcher in matchers:
-            if matcher.nb_calls:
-                already_matched.append(matcher)
-            else:
-                unmatched.append(matcher)
-
-        matchers_description = "\n".join(
-            [f"- {matcher}" for matcher in unmatched + already_matched]
-        )
-        if matchers_description:
-            message += f" amongst:\n{matchers_description}"
-            if any(not matcher.is_reusable for matcher in already_matched):
-                message += "\n\nIf you wanted to reuse an already matched response instead of registering it again, refer to is_reusable=True or can_send_already_matched_responses option."
-
-        return message
 
     def _get_callback(
         self, request: Request

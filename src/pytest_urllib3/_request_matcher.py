@@ -97,23 +97,11 @@ class _RequestMatcher:
             )
 
     def _is_matching_body_more_than_one_way(self) -> bool:
-        matching_ways = [
-            self.content is not None,
-            self.json is not None,
-        ]
-        return sum(matching_ways) > 1
+        return self.content is not None and self.json is not None
 
     def _is_matching_params_more_than_one_way(self) -> bool:
-        url_has_params = (
-            bool(urlparse(self.url).query)
-            if (self.url and isinstance(self.url, str))
-            else False
-        )
-        matching_ways = [
-            self.params is not None,
-            url_has_params,
-        ]
-        return sum(matching_ways) > 1
+        url_has_params = isinstance(self.url, str) and bool(urlparse(self.url).query)
+        return self.params is not None and url_has_params
 
     def match(self, request: Request) -> bool:
         return (
