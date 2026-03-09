@@ -1,6 +1,6 @@
 [project]
 name = "pytest-urllib3"
-version = "0.1.4"
+version = "0.2.0"
 description = "A pytest plugin to mock urllib3 requests"
 readme = "README.md"
 license = "MPL-2.0"
@@ -34,7 +34,7 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = [
     "pytest>=7",
-    "urllib3>=2",
+    "urllib3>=1.26",
 ]
 
 [project.urls]
@@ -70,10 +70,19 @@ allow-multiline = false
 known-first-party = ["pytest_urllib3"]
 
 [tool.tox]
-env_list = ["py39", "py310", "py311", "py312", "py313", "py314"]
+legacy_tox_ini = """
+[tox]
+env_list =
+    py39-pytest7-urllib3{1,2}
+    py{310,311,312,313,314}-pytest{7,8}-urllib3{1,2}
 
-[tool.tox.env_run_base]
-description = "Run tests under {base_python}"
-set_env = {TERM = "xterm"}
-deps = ["pytest>=7"]
-commands = [["pytest", "tests/", "-q", "--no-header", "--tb=short"]]
+[testenv]
+description = Run tests under {base_python} with {env_name}
+set_env = TERM = xterm
+deps =
+    pytest7: pytest>=7,<8
+    pytest8: pytest>=8,<9
+    urllib31: urllib3>=1.26,<2
+    urllib32: urllib3>=2,<3
+commands = pytest tests/ -q --no-header --tb=short
+"""

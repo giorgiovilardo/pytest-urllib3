@@ -5,9 +5,10 @@ import json as json_module
 from collections.abc import Callable
 from typing import Any, NoReturn, Optional
 
+import urllib3
 import urllib3.exceptions
 
-import urllib3
+_URLLIB3_V2 = int(urllib3.__version__.split(".")[0]) >= 2
 from pytest_urllib3._options import _Urllib3MockOptions
 from pytest_urllib3._pretty_print import explain_no_response_found
 from pytest_urllib3._request import Request
@@ -36,16 +37,20 @@ def _build_response(
 
     final_headers.setdefault("Content-Length", str(len(body)))
 
-    return urllib3.HTTPResponse(
+    kwargs = dict(
         body=io.BytesIO(body),
         status=status_code,
         headers=final_headers,
         preload_content=False,
         decode_content=False,
         version=11,
-        version_string="HTTP/1.1",
         reason=http.client.responses.get(status_code, "Unknown"),
     )
+    # version_string was added in urllib3 2.x
+    if _URLLIB3_V2:
+        kwargs["version_string"] = "HTTP/1.1"
+
+    return urllib3.HTTPResponse(**kwargs)
 
 
 class Urllib3Mock:

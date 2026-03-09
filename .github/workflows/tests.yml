@@ -11,21 +11,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        pytest-version: ["7", "8"]
+        urllib3-version: ["1", "2"]
+        exclude:
           - python-version: "3.9"
-            tox-env: py39
-          - python-version: "3.10"
-            tox-env: py310
-          - python-version: "3.11"
-            tox-env: py311
-          - python-version: "3.12"
-            tox-env: py312
-          - python-version: "3.13"
-            tox-env: py313
-          - python-version: "3.14"
-            tox-env: py314
+            pytest-version: "8"
 
-    name: Python ${{ matrix.python-version }}
+    name: py${{ matrix.python-version }} / pytest${{ matrix.pytest-version }} / urllib3v${{ matrix.urllib3-version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,5 +31,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
+      - name: Determine tox env name
+        id: tox-env
+        run: |
+          py_nodot=$(echo "${{ matrix.python-version }}" | tr -d '.')
+          echo "env=py${py_nodot}-pytest${{ matrix.pytest-version }}-urllib3${{ matrix.urllib3-version }}" >> "$GITHUB_OUTPUT"
+
       - name: Run tests via tox
-        run: uvx --with tox-uv tox run -e ${{ matrix.tox-env }}
+        run: uvx --with tox-uv tox run -e ${{ steps.tox-env.outputs.env }}
